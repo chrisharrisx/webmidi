@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EASELCOMMAND.COM</title>
+  <script src="https://cdn.jsdelivr.net/npm/webmidi"></script>
+</head>
+<body>
+  <span id="C3">1</span>
+  <span id="D3">2</span>
+  <span id="E3">3</span>
+  <span id="F3">4</span>
+  <span id="G3">5</span>
+  <span id="A3">6</span>
+  <span id="B3">7</span>
+
+  <p>Filter: <input type="range" id="filter"></p>
+  <script>
+    // let midi = null
+
+    // function onMIDISuccess(midiAccess) {
+    //   console.log("MIDI ready!");
+    //   midi = midiAccess;  // store in the global (in real usage, would probably keep in an object instance)
+    //   listInputsAndOutputs(midi);
+    // }
+
+    // function onMIDIFailure(msg) {
+    //   console.log("Failed to get MIDI access - " + msg);
+    // }
+
+    // navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
+
+    // function listInputsAndOutputs(midiAccess) {
+    //   for (let input in midiAccess.inputs) {
+    //     console.log( "Input port [type:'" + input.type + "'] id:'" + input.id +
+    //       "' manufacturer:'" + input.manufacturer + "' name:'" + input.name +
+    //       "' version:'" + input.version + "'" );
+    //   }
+
+    //   for (let output in midiAccess.outputs) {
+    //     console.log( "Output port [type:'" + output.type + "'] id:'" + output.id +
+    //       "' manufacturer:'" + output.manufacturer + "' name:'" + output.name +
+    //       "' version:'" + output.version + "'" );
+    //   }
+    // }
+
+    WebMidi.enable(function (err) {
+      if (err) {
+        console.log("WebMidi could not be enabled.", err);
+      } else {
+        console.log(WebMidi.inputs)
+        console.log(WebMidi.outputs)
+
+        const output = WebMidi.getOutputByName("OB-6 Module")
+        // let currentNote = null
+
+        Array.from(document.querySelectorAll('span')).forEach(span => {
+          span.addEventListener('click', function() {
+            console.log(this.id)
+            const id = this.id
+            output.playNote(id)
+
+            setTimeout(function() {
+              output.stopNote(id)
+            }, 500)
+            
+            // currentNote = this.id
+          })
+        })
+
+        // document.getElementById('stop').addEventListener('click', function() {
+        //   console.log('clicking')
+        //   output.stopNote(currentNote)
+        // });
+
+        document.getElementById('filter').addEventListener('input', function(e) {
+          // console.log(e.target.value)
+          output.sendControlChange(102, e.target.value);
+        });
+      }
+    });
+
+    
+  </script>
+</body>
+</html>
